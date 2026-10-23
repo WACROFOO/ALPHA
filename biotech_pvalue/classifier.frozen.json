@@ -1,0 +1,20 @@
+{
+  "history": [
+    {
+      "sha256": "4a4d8e83fc67ec0e5dd25bfa0cd00db43c93fe1f4003b2543427bf45f96adc1c",
+      "frozen_at_utc": "2026-10-23T21:42:53.124342+00:00",
+      "returns_existed_at_freeze": false
+    },
+    {
+      "sha256": "c2f3f0d2720a16732fff22a93c17393c7c3bf19c942824d222e3ea4530a888c3",
+      "frozen_at_utc": "2026-10-23T21:45:02.941444+00:00",
+      "returns_existed_at_freeze": false
+    },
+    {
+      "sha256": "4aacf43c0ff06914b4910f64f5876b1ee931f8b15055b794529564c0a4d31e0d",
+      "frozen_at_utc": "2026-10-23T22:14:14.212423+00:00",
+      "returns_existed_at_freeze": false
+    }
+  ],
+  "sha256": "4aacf43c0ff06914b4910f64f5876b1ee931f8b15055b794529564c0a4d31e0d"
+}

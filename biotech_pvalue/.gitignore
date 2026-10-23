@@ -1,0 +1,5 @@
+# raw downloads are several GB; rebuild with fetch_edgar.py / fetch_prices.py
+data/raw/
+data/derived/prices/
+__pycache__/
+*.tmp
