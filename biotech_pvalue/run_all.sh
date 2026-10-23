@@ -10,4 +10,5 @@ python3 fetch_prices.py          # Yahoo prices (survivorship-biased, see README
 python3 backtest.py --period dev
 python3 variants.py              # dev-only variants, appended to the log
 python3 backtest.py --period holdout   # reproduction run after the first
+python3 descriptives.py          # post-hoc descriptive numbers (not in verdict)
 python3 report.py

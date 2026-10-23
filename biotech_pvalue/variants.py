@@ -127,8 +127,14 @@ def main():
 
     log = pd.DataFrame(rows)
     if log_path.exists():
-        log = pd.concat([pd.read_csv(log_path), log], ignore_index=True)
-    log.to_csv(log_path, index=False)
+        old = pd.read_csv(log_path)
+        key = ["variant", "n_p_20", "n_nop_20", "net_spread_20"]
+        seen = {tuple(r) for r in old[key].round(10).itertuples(index=False)}
+        new = log[[tuple(r) not in seen for r in log[key].round(10).itertuples(index=False)]]
+        print(f"{len(log) - len(new)} variant results reproduced exactly; {len(new)} new rows logged")
+        log = pd.concat([old, new], ignore_index=True) if len(new) else None
+    if log is not None:
+        log.to_csv(log_path, index=False)
     print(json.dumps(out, indent=2, default=str)[:3000])
 
 

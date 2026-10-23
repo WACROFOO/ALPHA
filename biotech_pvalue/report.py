@@ -83,7 +83,7 @@ def chart_car():
     style(ax, "Mean cumulative return vs XBI after entry, before costs (2015-2022)",
           "cumulative abnormal return, %")
     ax.set_xlabel("trading days after entry", color=INK2, fontsize=9)
-    ax.legend(frameon=False, fontsize=8, loc="lower left", labelcolor=INK2)
+    ax.legend(frameon=False, fontsize=8, loc="upper left", labelcolor=INK2)
     fig.tight_layout()
     out = R / "car_paths_dev.png"
     fig.savefig(out, dpi=130)
@@ -241,7 +241,7 @@ def main():
     desc = json.loads(desc_f.read_text()) if desc_f.exists() else {}
     log = pd.read_csv(R / "variants_log.csv") if (R / "variants_log.csv").exists() else pd.DataFrame()
 
-    L = [f"# Biotech p-value backtest: report", "",
+    L = ["# Biotech p-value backtest: report", "",
          f"**Verdict: {verdict.upper()}**", "",
          "Hypothesis: biotech press releases that claim positive trial results but give no p-value for "
          "the primary endpoint underperform those that give one, over 5-60 trading days.", "",

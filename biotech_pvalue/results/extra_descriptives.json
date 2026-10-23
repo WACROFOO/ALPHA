@@ -1,0 +1,77 @@
+{
+ "dev": {
+  "n_events_after_30d_rule": 643,
+  "n_traded": 242,
+  "share_no_price_data": 0.488,
+  "status_share_by_group": {
+   "no": {
+    "adv_below_500k": 0.093,
+    "no_price_data": 0.474,
+    "price_below_1": 0.071,
+    "traded": 0.362
+   },
+   "yes": {
+    "adv_below_500k": 0.054,
+    "no_price_data": 0.516,
+    "price_below_1": 0.027,
+    "traded": 0.404
+   }
+  },
+  "pre_entry_move_mean": {
+   "no": 0.0496,
+   "yes": 0.1731
+  },
+  "pre_entry_move_median": {
+   "no": 0.0087,
+   "yes": 0.0462
+  },
+  "phase3_share_traded": {
+   "no": 0.309,
+   "yes": 0.656
+  },
+  "largest_ar20": "FLNA +331.8% (p-value given: no)",
+  "net_spread_20d_without_largest_trade": -0.0032
+ },
+ "holdout": {
+  "n_events_after_30d_rule": 323,
+  "n_traded": 196,
+  "share_no_price_data": 0.149,
+  "status_share_by_group": {
+   "no": {
+    "adv_below_500k": 0.132,
+    "no_price_data": 0.151,
+    "price_below_1": 0.142,
+    "traded": 0.575
+   },
+   "yes": {
+    "adv_below_500k": 0.108,
+    "no_price_data": 0.144,
+    "price_below_1": 0.081,
+    "traded": 0.667
+   }
+  },
+  "pre_entry_move_mean": {
+   "no": 0.0838,
+   "yes": 0.231
+  },
+  "pre_entry_move_median": {
+   "no": 0.0106,
+   "yes": 0.0401
+  },
+  "phase3_share_traded": {
+   "no": 0.27,
+   "yes": 0.581
+  },
+  "largest_ar20": "MNPR +274.3% (p-value given: yes)",
+  "net_spread_20d_without_largest_trade": -0.0263
+ },
+ "edgar_json_timestamp_error": {
+  "share_wrong": 0.412,
+  "hours_off_counts": {
+   "0.0": 7980,
+   "4.0": 3513,
+   "5.0": 2088
+  }
+ },
+ "share_filings_without_current_ticker": 0.353
+}
