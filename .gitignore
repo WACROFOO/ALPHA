@@ -1,0 +1,7 @@
+# large generated data (rebuilt by corpus/extract_legi.py)
+/data/
+__pycache__/
+*.pyc
+/lean/.lake/
+/validation/out/
+/search/out/

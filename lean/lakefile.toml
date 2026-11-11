@@ -1,0 +1,10 @@
+name = "cgi"
+version = "0.1.0"
+defaultTargets = ["CGI", "ir2025"]
+
+[[lean_lib]]
+name = "CGI"
+
+[[lean_exe]]
+name = "ir2025"
+root = "Main"
