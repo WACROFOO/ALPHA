@@ -43,6 +43,7 @@ def foyer (j : Json) : Foyer :=
                  nbH := gN j "nbH", nbI := gN j "nbI", nbR := gN j "nbR" },
     d1 := personne (sub "d1"), d2 := personne (sub "d2"),
     dividendes := gI j "dividendes", interets := gI j "interets", plusValues := gI j "plusValues",
+    plusValueExceptionnelle := gI j "plusValueExceptionnelle",
     optionBareme := gB j "optionBareme", microFoncier := gI j "microFoncier",
     csgDeductible := gI j "csgDeductible", pensionsEnfantsMajeurs := gL j "pensionsEnfantsMajeurs",
     autresPensions := gI j "autresPensions", foyersRattaches := gN j "foyersRattaches",

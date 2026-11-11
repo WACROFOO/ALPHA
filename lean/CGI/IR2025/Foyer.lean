@@ -41,6 +41,12 @@ structure Foyer where
   dividendes : Int := 0        -- 2DC
   interets : Int := 0          -- 2TR
   plusValues : Int := 0        -- 3VG
+  /-- Plus-value de cession de valeurs mobilières à caractère exceptionnel
+  (cession d'entreprise…) : imposée comme 3VG, mais « revenu qui, par sa
+  nature, n'est pas susceptible d'être recueilli annuellement » au sens du
+  neuvième alinéa du II de l'art. 224 (supposé excéder la moyenne des trois
+  années précédentes). -/
+  plusValueExceptionnelle : Int := 0
   optionBareme : Bool := false -- 2OP
   microFoncier : Int := 0      -- 4BE (recettes brutes)
   csgDeductible : Int := 0     -- 6DE
@@ -138,6 +144,7 @@ def nonSalaries (p : Personne) : Int :=
 (art. 200 A, 2) : abattement de 40 % sur les dividendes (art. 158, 3, 2°). -/
 def rcmBareme (f : Foyer) : Int :=
   if f.optionBareme then f.dividendes - arrondi (f.dividendes * 40) 100 + f.interets + f.plusValues
+    + f.plusValueExceptionnelle
   else 0
 
 /-- Micro-foncier (art. 32) : abattement de 30 %. -/
@@ -220,7 +227,7 @@ def creditSyndical (p : Personne) : Int :=
 
 def impotForfaitaire (f : Foyer) : Int :=
   if f.optionBareme then 0
-  else arrondi ((pos f.dividendes + pos f.interets + pos f.plusValues) * 128) 1000
+  else arrondi ((pos f.dividendes + pos f.interets + pos f.plusValues + pos f.plusValueExceptionnelle) * 128) 1000
 
 /-! ## Revenu fiscal de référence — art. 1417, IV -/
 
@@ -229,7 +236,7 @@ def revenuFiscalReference (f : Foyer) : Int :=
   revenuImposable f
     + deductionPER f.d1 + deductionPER d2                         -- a du 1°
     + (if f.optionBareme then arrondi (f.dividendes * 40) 100      -- a bis du 1°
-       else pos f.dividendes + pos f.interets + pos f.plusValues)  -- c du 1°
+       else pos f.dividendes + pos f.interets + pos f.plusValues + pos f.plusValueExceptionnelle)  -- c du 1°
 
 /-! ## 9. Contributions sur les hauts revenus -/
 
@@ -301,7 +308,18 @@ def calcul (f : Foyer) : Resultat :=
   -- procuré par la réduction d'impôt pour dons (art. 200) effectivement imputée.
   -- Correction apportée au modèle après comparaison avec OpenFisca.
   let donsImputes := min (reductionDons f ri) iad
-  let c2 := cdhr couple fam.pac rfr (iac + donsImputes + c1)
+  -- art. 224, II : assiette = RFR diminué des abattements du a bis (dont
+  -- l'abattement de 40 % sur les dividendes imposés au barème, 1°) ; les
+  -- revenus exceptionnels sont retenus pour le quart de leur montant.
+  let ex := pos f.plusValueExceptionnelle
+  let abat40 := if f.optionBareme then arrondi (f.dividendes * 40) 100 else 0
+  let baseCdhr := rfr - abat40 - arrondi (ex * 3) 4
+  -- art. 224, IV, A, 1° et B, 3° : l'impôt et la CEHR se rapportant à ces
+  -- revenus exceptionnels sont retenus pour le quart de leur montant.
+  let irEx := if f.optionBareme then 0 else arrondi (ex * 128) 1000
+  let cehrEx := c1 - cehr couple (rfr - ex)
+  let impotsRetenus := iac + donsImputes - arrondi (irEx * 3) 4 + c1 - arrondi (cehrEx * 3) 4
+  let c2 := cdhr couple fam.pac baseCdhr impotsRetenus
   -- art. 1657, 1 bis : cotisation inférieure à 61 € non mise en recouvrement
   let iacRec := if iac + c1 + c2 < P.seuilRecouvrement then 0 else iac + c1 + c2
   { revenuBrutGlobal := rbg, charges := ch, revenuNetGlobal := rng, abattements := ab,
