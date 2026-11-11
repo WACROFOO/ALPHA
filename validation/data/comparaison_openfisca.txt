@@ -1,0 +1,42 @@
+5000 foyers comparés, 249 en désaccord (> 2 €) sur au moins une étape
+
+étape                                exact    ≤ 2 €  désaccord    écart max
+revenu net imposable                  3789     1076        135      2822.00
+nombre de parts                       5000        0          0         0.00
+impôt après plafonnement QF           1098     3819         83      2011.51
+impôt après décote                    4678      276         46      2012.00
+réductions d'impôt                    4963       29          8        90.00
+prélèvement forfaitaire 12,8 %        2523     2477          0         0.00
+crédits d'impôt                       4828      153         19      1500.00
+CEHR                                  5000        0          0         0.00
+CDHR                                  4859      141          0         0.00
+revenu fiscal de référence            3944      921        135      2822.00
+revenu brut global                    3917     1083          0         0.00
+impôt net hors CDHR                   2499     2384        117      2012.00
+
+causes des désaccords :
+    135  A: abattement 157 bis non doublé (OpenFisca)
+     46  B: veuf, enfants en résidence alternée seulement : réduction de 2 011 € (OpenFisca)
+     18  C: emploi à domicile, majoration de 1 500 € par membre de plus de 65 ans (OpenFisca)
+      7  D: dons 7UD plafonnés à 2 000 € au lieu de 1 000 € avant le 14 octobre 2025 (OpenFisca)
+     41  E: seuil de 61 € appliqué à une cotisation incluant le PFU (art. 1657, 1 bis) — lecture divergente
+      1  F: arrondis cumulés (PFU et décote non arrondis par OpenFisca)
+      1  G: emploi à domicile, enfants en résidence alternée soustraits au lieu d'être ajoutés (nb_pac2, OpenFisca)
+
+catégorie               foyers  désaccord
+abattement_157bis          200         52
+alternee                   200          9
+charges                    200          0
+decote                     200          1
+demi_parts_195             200          0
+frais_pro                  200          1
+hauts_revenus              200          0
+invalides                  200          1
+micro                      200          5
+option_bareme              200          1
+ordinaire                 2000         32
+pensions                   200         56
+plafonnement_qf            200          0
+reductions_credits         200         51
+seuil_61                   200          2
+veuf                       200         38

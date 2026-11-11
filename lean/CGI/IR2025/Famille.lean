@@ -136,7 +136,10 @@ def plafond2 (f : Famille) : Int :=
   let piAlt := f.quartsParentIsoleAlt
   -- quarts plafonnés à 1 807 / 2 chacun (soit 1 807 en demi-euros)
   let ordinaires := excedent4 - piAlt
-  let base := ordinaires * plafDemiPart + piAlt * plafParentIsole
+  -- chaque quart « parent isolé alterné » est plafonné à 4 262 € / 4, soit
+  -- 2 131 demi-euros (4 262 € / 2 pour les deux quarts d'un même enfant).
+  -- Correction apportée au modèle après comparaison avec OpenFisca.
+  let base := ordinaires * plafDemiPart + piAlt * (plafParentIsole / 2)
   -- parent isolé avec charge exclusive : 4 262 € au lieu de 2 × 1 807 € pour
   -- les deux premières demi-parts
   let bonusT := if f.majT4 > 0 && f.nbF + f.nbJ > 0 then 2 * (plafParentIsole - 2 * plafDemiPart) else 0

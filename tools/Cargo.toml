@@ -1,0 +1,21 @@
+[package]
+name = "cgi-tools"
+version = "0.1.0"
+edition = "2021"
+description = "Corpus extraction and drafting checks for the French Code général des impôts"
+license = "CC0-1.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+fancy-regex = "0.13"
+roxmltree = "0.20"
+flate2 = "1"
+tar = "0.4"
+unicode-normalization = "0.1"
+sha1_smol = "1"
+html-escape = "0.2"
+
+[profile.release]
+opt-level = 3
+debug = false

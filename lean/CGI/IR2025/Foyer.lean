@@ -86,15 +86,35 @@ def scolSup : Int := 183
 def plafondNiches : Int := 10000
 /-- art. 1657, 1 bis : seuil de mise en recouvrement. -/
 def seuilRecouvrement : Int := 61
+/-- art. 1657, 2 : cotisations d'impôts directs inférieures à 12 € non recouvrées. -/
+def seuilCotisation : Int := 12
+/-- art. 1965 L : restitutions inférieures à 8 € non effectuées. -/
+def seuilRestitution : Int := 8
 end P
+
+/-- Seuils de recouvrement et de restitution appliqués au solde final. -/
+def appliquerSeuils (net : Int) : Int :=
+  if 0 < net ∧ net < P.seuilCotisation then 0
+  else if net < 0 ∧ -net < P.seuilRestitution then 0
+  else net
+
+theorem appliquerSeuils_petit (n : Int) (h1 : -8 < n) (h2 : n < 12) : appliquerSeuils n = 0 := by
+  unfold appliquerSeuils P.seuilCotisation P.seuilRestitution; split <;> (try split) <;> omega
 
 /-! ## 1. Revenus catégoriels -/
 
-/-- Traitements et salaires nets (art. 83, 3°) : déduction de 10 % comprise
-entre 509 € et 14 555 €, sans excéder le salaire ; ou frais réels. -/
+/-- Déduction forfaitaire (art. 83, 3°) : 10 % compris entre 509 € et
+14 555 €, le minimum ne pouvant excéder le salaire. -/
+def deductionForfaitaire (p : Personne) : Int :=
+  max (min (pos p.salaires) P.fpMin) (min (arrondi (p.salaires * P.fpTaux) 100) P.fpMax)
+
+/-- Traitements et salaires nets.  Les frais réels sont une faculté (« sont
+également admis à justifier du montant de leurs frais réels ») : ils ne sont
+retenus que s'ils excèdent la déduction forfaitaire, comme le fait la
+calculette de la DGFiP (`TIND_10V`, chap-teff.m).  Correction apportée au
+modèle après comparaison avec OpenFisca. -/
 def salairesNets (p : Personne) : Int :=
-  let ded := if p.fraisReels > 0 then p.fraisReels
-             else min (max (arrondi (p.salaires * P.fpTaux) 100) P.fpMin) P.fpMax
+  let ded := max (deductionForfaitaire p) (pos p.fraisReels)
   pos (p.salaires - min ded (pos p.salaires))
 
 /-- Abattement de 10 % sur les pensions d'un bénéficiaire, avec le minimum de
@@ -277,13 +297,17 @@ def calcul (f : Foyer) : Resultat :=
   let cred := nichesPlaf + creditSyndical f.d1 + creditSyndical d2
   let rfr := revenuFiscalReference f
   let c1 := cehr couple rfr
-  let c2 := cdhr couple fam.pac rfr (iac + c1)
+  -- art. 224, IV, A, 2° : l'impôt retenu pour la CDHR est majoré de l'avantage
+  -- procuré par la réduction d'impôt pour dons (art. 200) effectivement imputée.
+  -- Correction apportée au modèle après comparaison avec OpenFisca.
+  let donsImputes := min (reductionDons f ri) iad
+  let c2 := cdhr couple fam.pac rfr (iac + donsImputes + c1)
   -- art. 1657, 1 bis : cotisation inférieure à 61 € non mise en recouvrement
   let iacRec := if iac + c1 + c2 < P.seuilRecouvrement then 0 else iac + c1 + c2
   { revenuBrutGlobal := rbg, charges := ch, revenuNetGlobal := rng, abattements := ab,
     revenuImposable := ri, parts4 := q, droitsSimples := ds, impotPlafonne := ip,
     decote := dec, impotApresDecote := iad, reductions := red, impotForfaitaire := ifo,
     impotAvantCredits := iac, credits := cred, cehr := c1, cdhr := c2, rfr := rfr,
-    impotNet := iacRec - cred }
+    impotNet := appliquerSeuils (iacRec - cred) }
 
 end CGI.IR2025
