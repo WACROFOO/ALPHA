@@ -49,7 +49,8 @@ def foyer (j : Json) : Foyer :=
     autresPensions := gI j "autresPensions", foyersRattaches := gN j "foyersRattaches",
     dons75 := gI j "dons75", dons66 := gI j "dons66", emploiDomicile := gI j "emploiDomicile",
     premiereAnneeEmploi := gB j "premiereAnneeEmploi", gardeEnfants := gL j "gardeEnfants",
-    scolCollege := gN j "scolCollege", scolLycee := gN j "scolLycee", scolSup := gN j "scolSup" }
+    scolCollege := gN j "scolCollege", scolLycee := gN j "scolLycee", scolSup := gN j "scolSup",
+    souscriptionsPME := gI j "souscriptionsPME", souscriptionsFIP30 := gI j "souscriptionsFIP30" }
 
 def sortie (id : Json) (r : Resultat) : Json :=
   Json.mkObj [("id", id), ("rbg", toJson r.revenuBrutGlobal), ("charges", toJson r.charges),

@@ -67,6 +67,8 @@ structure Foyer where
   scolCollege : Nat := 0       -- 7EA
   scolLycee : Nat := 0         -- 7EC
   scolSup : Nat := 0           -- 7EF
+  souscriptionsPME : Int := 0  -- 7CF (art. 199 terdecies-0 A, I : 18 %)
+  souscriptionsFIP30 : Int := 0 -- 7FL (FIP Corse / outre-mer, VI : 30 %)
   deriving Repr, Inhabited
 
 /-! ## Paramètres (revenus 2025) -/
@@ -237,8 +239,18 @@ def creditGarde (f : Foyer) : Int :=
 /-- art. 199 quater C : cotisations syndicales — 66 % dans la limite de 1 %
 des salaires et pensions. -/
 def creditSyndical (p : Personne) : Int :=
+  -- « Le crédit d'impôt ne s'applique pas aux bénéficiaires de traitements et
+  -- salaires admis à justifier du montant de leurs frais réels. »
+  if p.fraisReels > deductionForfaitaire p then 0 else
   let lim := arrondi ((pos p.salaires + pos p.pensions) * 1) 100
   arrondi (min (pos p.cotisationsSyndicales) lim * 66) 100
+
+/-- art. 199 terdecies-0 A : 18 % des souscriptions au capital de PME (plafond
+50 000 € / 100 000 €) ; 30 % pour les FIP Corse et outre-mer (12 000 € / 24 000 €). -/
+def reductionPME (f : Foyer) : Int :=
+  let c := f.famille.situation.couple
+  arrondi (min (pos f.souscriptionsPME) (if c then 100000 else 50000) * 18) 100
+    + arrondi (min (pos f.souscriptionsFIP30) (if c then 24000 else 12000) * 30) 100
 
 /-! ## 7. Impôt au taux forfaitaire — art. 200 A, 1 -/
 
@@ -318,7 +330,7 @@ def calcul (f : Foyer) : Resultat :=
   let dec := decote couple ip
   let iad := ip - dec
   -- réductions (non restituables), imputées sur l'impôt au barème
-  let redBrut := reductionDons f ri + reductionScolarite f
+  let redBrut := reductionDons f ri + reductionScolarite f + reductionPME f
   let red := min redBrut iad
   let ifo := impotForfaitaire f
   let iac := iad - red + ifo + impotVfl f.d1 + impotVfl d2
