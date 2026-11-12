@@ -32,6 +32,12 @@ structure Personne where
   versementsPER : Int := 0     -- 6NS / 6NT
   plafondPER : Int := 0        -- plafond de déduction disponible (avis 2025)
   cotisationsSyndicales : Int := 0 -- 7AC / 7AE
+  /-- Option pour le versement forfaitaire libératoire (art. 151-0) : l'impôt
+  sur les bénéfices micro est acquitté au taux de 1 % (ventes), 1,7 %
+  (prestations BIC) ou 2,2 % (BNC) du chiffre d'affaires.  Condition : RFR de
+  l'avant-dernière année (N-2) inférieur à la limite de la deuxième tranche du
+  barème par part — vérifiée hors du modèle. -/
+  vfl : Bool := false
   deriving Repr, Inhabited
 
 structure Foyer where
@@ -137,8 +143,19 @@ def microNet (recettes taux : Int) : Int :=
   if recettes ≤ 0 then 0 else
   pos (recettes - min (max (arrondi (recettes * taux) 100) P.microMin) recettes)
 
-def nonSalaries (p : Personne) : Int :=
+def microTotal (p : Personne) : Int :=
   microNet p.microBicVente 71 + microNet p.microBicServices 50 + microNet p.microBnc 34
+
+/-- Bénéfices micro soumis au barème (hors versement libératoire). -/
+def nonSalaries (p : Personne) : Int := if p.vfl then 0 else microTotal p
+
+/-- Bénéfices micro relevant du versement libératoire (exclus du barème, mais
+retenus pour le taux effectif, art. 197 C, et dans le RFR, art. 1417, IV). -/
+def microVfl (p : Personne) : Int := if p.vfl then microTotal p else 0
+
+/-- Versement libératoire (art. 151-0, I, 3°). -/
+def impotVfl (p : Personne) : Int :=
+  if p.vfl then arrondi (pos p.microBicVente * 10 + pos p.microBicServices * 17 + pos p.microBnc * 22) 1000 else 0
 
 /-- Revenus de capitaux mobiliers imposés au barème sur option globale
 (art. 200 A, 2) : abattement de 40 % sur les dividendes (art. 158, 3, 2°). -/
@@ -233,7 +250,7 @@ def impotForfaitaire (f : Foyer) : Int :=
 
 def revenuFiscalReference (f : Foyer) : Int :=
   let d2 := if f.famille.situation.couple then f.d2 else {}
-  revenuImposable f
+  revenuImposable f + microVfl f.d1 + microVfl d2
     + deductionPER f.d1 + deductionPER d2                         -- a du 1°
     + (if f.optionBareme then arrondi (f.dividendes * 40) 100      -- a bis du 1°
        else pos f.dividendes + pos f.interets + pos f.plusValues + pos f.plusValueExceptionnelle)  -- c du 1°
@@ -291,14 +308,20 @@ def calcul (f : Foyer) : Resultat :=
   let ri := revenuImposable f
   let q := fam.parts4
   let ds := droitsSimples ri q
-  let ip := impotPlafonne ri fam
+  -- art. 197 C : taux effectif — l'impôt au barème est calculé sur le revenu
+  -- augmenté des bénéfices soumis au versement libératoire, puis réduit au
+  -- prorata des seuls revenus imposables au barème.
+  let rv := microVfl f.d1 + microVfl d2
+  let ip := if rv = 0 then impotPlafonne ri fam
+            else if ri + rv ≤ 0 then 0
+            else arrondi (impotPlafonne (ri + rv) fam * ri) (ri + rv)
   let dec := decote couple ip
   let iad := ip - dec
   -- réductions (non restituables), imputées sur l'impôt au barème
   let redBrut := reductionDons f ri + reductionScolarite f
   let red := min redBrut iad
   let ifo := impotForfaitaire f
-  let iac := iad - red + ifo
+  let iac := iad - red + ifo + impotVfl f.d1 + impotVfl d2
   -- crédits d'impôt (restituables) ; plafonnement global des niches (art. 200-0 A)
   let nichesPlaf := min (creditEmploiDomicile f + creditGarde f) P.plafondNiches
   let cred := nichesPlaf + creditSyndical f.d1 + creditSyndical d2

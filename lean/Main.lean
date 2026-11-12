@@ -28,7 +28,7 @@ def personne (j : Json) : Personne :=
     microBicVente := gI j "microBicVente", microBicServices := gI j "microBicServices",
     microBnc := gI j "microBnc", plus65 := gB j "plus65",
     versementsPER := gI j "versementsPER", plafondPER := gI j "plafondPER",
-    cotisationsSyndicales := gI j "cotisationsSyndicales" }
+    cotisationsSyndicales := gI j "cotisationsSyndicales", vfl := gB j "vfl" }
 
 def situation (s : String) : Situation :=
   match s with

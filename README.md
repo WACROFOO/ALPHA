@@ -75,6 +75,30 @@ réserver l'abattement de 12 500 € qu'aux couples dont chaque membre a des rev
   par an (connu, voulu par le législateur).
 * **F6** — option pour le barème pour réduire l'assiette de la CDHR : jamais rentable.
 
+### Failles profitables aux revenus modestes (prouvées en Lean)
+
+`lean/CGI/IR2025/Modestes.lean` énonce chaque cas comme un théorème vérifié par
+calcul sur le modèle ; `cgi-modestes` (Rust) en recherche les pires cas.
+
+* **M1 — versement libératoire « décalé » (art. 151-0)** : l'accès dépend du seul
+  RFR de l'année N-2 (29 579 € pour une personne seule). Un contribuable modeste
+  deux ans plus tôt peut facturer jusqu'au plafond micro et ne payer que 1 % à
+  2,2 % du chiffre d'affaires : **8 743 €/an** économisés au plafond des ventes
+  (203 100 € : 10 774 € → 2 031 €), **7 818 €/an** au plafond BNC, pendant deux ans,
+  alors que son RFR de l'année dépasse de 99 % la limite.
+  *Correction :* apprécier aussi la condition sur le RFR de l'année (régularisation
+  si elle est dépassée), ou plafonner le chiffre d'affaires éligible.
+* **M2 — décote des concubins (art. 197, I, 4, a)** : deux concubins ont chacun la
+  décote de 897 € ; un couple marié ou pacsé n'a que 1 483 € (< 1 794 €). Deux
+  salaires de 19 500 € : **418 €/an** en mariage, **0 €** en concubinage — un PACS
+  dissous rapporte autant. *Correction :* porter la décote du couple à 2 × 897 €
+  (ou la calculer par membre du couple).
+* **M3 — seuils franchis avec 1 € de déduction** : 1 € versé sur un PER supprime
+  **62 €** d'impôt au seuil de recouvrement de 61 € (art. 1657, 1 bis) et rend à un
+  retraité l'abattement de 1 411 € de l'art. 157 bis, soit **226 €** économisés.
+  *Correction :* lisser ces seuils (dégressivité) au lieu de les appliquer en tout
+  ou rien.
+
 ### Effets de seuil défavorables (l'inverse d'une faille)
 
 `cgi-scan` balaie le revenu euro par euro ([`docs/falaises.md`](docs/falaises.md)) :
